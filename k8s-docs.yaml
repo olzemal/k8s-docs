@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-k8s-docs
+  labels:
+    app: k8s-docs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8s-docs
+  template:
+    metadata:
+      labels:
+        app: k8s-docs
+    spec:
+      containers:
+      - name: nginx
+        image: k8s-docs:v1.21
+        ports:
+        - containerPort: 80
+          name: web
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-docs-service
+spec:
+  type: NodePort
+  selector:
+    app: k8s-docs
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: web
