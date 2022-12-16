@@ -16,4 +16,8 @@ RUN \
   npm ci && make build
 
 RUN \
-  cp -r /website/public/* /usr/share/nginx/html/
+  rm -rf /root/* && \
+  rm -rf /hugo
+
+RUN \
+  mv /website/public/* /usr/share/nginx/html/

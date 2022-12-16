@@ -17,5 +17,5 @@ RUN \
   make build
 
 RUN \
-  cp -r /website/public/* /usr/share/nginx/html/
+  mv /website/public/* /usr/share/nginx/html/
 ```
