@@ -1,9 +1,21 @@
 # k8s-docs
+## Example usage
+```Dockerfile
+FROM olzemal/k8s-docs:latest
 
-Dockerfile and k8s deployment to host the k8s docs on premise.
+ENV K8S_RELEASE=1.21
+ENV LOCAL_URL=localhost
 
-## Quickstart
-```
-docker build --build-arg K8S_RELEASE="1.19" -t k8s-docs:v1.19 .
-kubectl apply -f k8s-docs.yaml
+RUN \
+  cd /website && \
+  git switch "release-$K8S_RELEASE" && \
+  sed -ie "s/kubernetes.io/$LOCAL_URL/g" /website/config.toml && \
+  sed -ie 's/^disableLanguages = .*$/disableLanguages = ["zh", "ko", "ja", "fr", "it", "es", "pt", "id", "ru", "vi", "pl", "uk", "no", "hi", "pt-br"]/g' /website/config.toml && \
+  sed -ie 's/https:/http:/g' /website/config.toml && \
+  sed -ie 's/version_menu = "Versions"/version_menu = "a"/g' /website/config.toml && \
+  make module-init && \
+  make build
+
+RUN \
+  cp -r /website/public/* /usr/share/nginx/html/
 ```

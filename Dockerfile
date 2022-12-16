@@ -1,8 +1,6 @@
-FROM alpine:latest as generate
+FROM nginx:alpine
 
 RUN apk add git go g++ make npm
-
-ARG K8S_RELEASE
 
 RUN \
   git clone "https://github.com/gohugoio/hugo.git" /hugo && \
@@ -14,12 +12,8 @@ RUN \
 RUN \
   git clone "https://github.com/kubernetes/website.git" /website && \
   cd /website && \
-  git switch "release-$K8S_RELEASE" && \
-  git submodule update --init --recursive --depth 1
-
-RUN \
-  cd /website && \
+  git submodule update --init --recursive --depth 1 && \
   npm ci && make build
 
-FROM nginx:latest
-COPY --from=generate /website/public /usr/share/nginx/html
+RUN \
+  cp -r /website/public/* /usr/share/nginx/html/
